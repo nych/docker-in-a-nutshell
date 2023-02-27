@@ -18,7 +18,7 @@ services:
     image: nginx:latest
     # mount config
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     # declares port mapping, equivalent to docker run -p 80:80 ..
     ports:
       - 80:80

@@ -1,0 +1,13 @@
+version: '3'
+
+tasks:
+
+  default:
+    desc: Print task list
+    cmds:
+      - cmd: task --list-all
+  
+  build:
+    desc: Builds greeter executable
+    cmds:
+      - cmd: go build -o build/main cmd/main.go
