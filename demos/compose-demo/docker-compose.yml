@@ -4,29 +4,28 @@ services:
   app:
     # refers the directory to build image from
     build: app
-    # defines number of instances, equivalent to run docker compose up --scale app=3
-    deploy:
-      mode: replicated
-      replicas: 3
-    # container is only started once redis was started
-    depends_on:
-      - redis
-  nginx:
-    # explictly sets a container name instead of defering it
-    container_name: nginx
-    # image is not build but pulled from registry, hence no build directive but image
-    image: nginx:latest
-    # mount config
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     # declares port mapping, equivalent to docker run -p 80:80 ..
     ports:
-      - 80:80
-    # container is only started once app was started
+      - 80:5000
+    # container is only started once redis was started
     depends_on:
-      - app
-  redis:
+      db:
+        condition: service_healthy
+  db:
     # explictly sets a container name instead of defering it
-    container_name: redis
+    container_name: app_db
     # image is not build but pulled from registry, hence no build directive but image
-    image: redis:latest
+    image: mariadb
+    # defines environment vars, passed to the container
+    environment:
+      MYSQL_ROOT_PASSWORD: changeme # of course not a good idea..
+      MYSQL_DATABASE: app_db
+      MYSQL_USER: db_user
+      MYSQL_PASSWORD: changeme_too
+    volumes:
+      - ./db/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-udb_user", "-pchangeme_too"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
