@@ -1,0 +1,26 @@
+services:
+  
+  server:
+    image: grpc-demo/server
+    build:
+      context: ../../
+      dockerfile: build/package/Dockerfile
+      target: server
+    container_name: server
+    hostname: server
+    ports:
+      - "8081:8081"
+    command: ["--port", "8081"]
+    
+  
+  reverseproxy:
+    image: grpc-demo/reverseproxy
+    build:
+      context: ../../
+      dockerfile: build/package/Dockerfile
+      target: reverseproxy
+    container_name: reverseproxy
+    hostname: reverseproxy
+    ports:
+      - "8080:8080"
+    command: ["--grpcServer", "server:8081", "--port", "8080"]

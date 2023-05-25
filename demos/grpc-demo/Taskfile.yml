@@ -1,0 +1,38 @@
+version: '3'
+
+tasks:
+
+  default:
+    desc: Print task list
+    cmds:
+      - cmd: task --list-all
+
+  build:
+    desc: Builds all services
+    deps:
+      - buf-gen
+    cmds:
+      - task: build-reverseproxy
+      - task: build-server
+
+  buf-gen:
+    desc: Generates code with protoc
+    deps:
+      - buf-lint
+    cmds:
+      - cmd: buf generate proto
+
+  buf-lint:
+    desc: Linting proto files
+    cmds:
+      - cmd: buf lint proto
+
+  build-server:
+    desc: Builds server executable
+    cmds:
+      - cmd: go build -o cmd/server/ cmd/server/main.go
+
+  build-reverseproxy:
+    desc: Builds reverseproxy executable
+    cmds:
+      - cmd: go build -o cmd/reverseproxy/ cmd/reverseproxy/main.go
