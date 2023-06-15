@@ -3,6 +3,14 @@ syntax = "proto3";
 package greeter.v1;
 
 import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info : {
+    title: "Greeter API";
+    version: "1.0";
+  };
+};
 
 service GreeterService {
   rpc GetGreetings(GetGreetingsRequest) returns (GetGreetingsResponse) {

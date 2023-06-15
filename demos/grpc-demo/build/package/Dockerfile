@@ -44,22 +44,3 @@ FROM dev-base as dev-server
 COPY --from=builder  /grpc-demo/cmd/server/main .
 
 CMD ["/main", "--port", "8081"]
-
-
-
-### reverseproxy image ###
-FROM alpine:latest as reverseproxy
-
-COPY --from=builder  /grpc-demo/cmd/reverseproxy/main .
-
-ENTRYPOINT ["/main"]
-
-CMD ["--grpcServer", "localhost:8081", "--port", "8081"]
-
-
-
-FROM dev-base as dev-reverseproxy
-
-COPY --from=builder  /grpc-demo/cmd/reverseproxy/main .
-
-CMD ["/main", "--grpcServer", "localhost:8081", "--port", "8081"]

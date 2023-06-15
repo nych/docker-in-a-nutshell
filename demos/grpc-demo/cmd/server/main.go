@@ -4,11 +4,12 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"net"
+	"net/http"
 
-	greeterv1 "github.com/nych/docker-in-a-nutshell/demos/grpc-demo/gen/go/greeter/v1"
+	"github.com/nych/docker-in-a-nutshell/demos/grpc-demo/gen/go/greeter/v1/greeterv1connect"
 	"github.com/nych/docker-in-a-nutshell/demos/grpc-demo/internal/greeter"
-	"google.golang.org/grpc"
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/h2c"
 )
 
 var (
@@ -21,15 +22,8 @@ func init() {
 }
 
 func main() {
-	listener, err := net.Listen("tcp", fmt.Sprintf(":%s", serverPortFlag))
-	if err != nil {
-		panic(err)
-	}
-	srv := grpc.NewServer()
-	greeterv1.RegisterGreeterServiceServer(srv, &greeter.Server{})
-
+	mux := http.NewServeMux()
+	mux.Handle(greeterv1connect.NewGreeterServiceHandler(&greeter.Server{}))
 	log.Println("start serving..")
-	if err := srv.Serve(listener); err != nil {
-		panic(err)
-	}
+	http.ListenAndServe(fmt.Sprintf(":%s", serverPortFlag), h2c.NewHandler(mux, &http2.Server{}))
 }

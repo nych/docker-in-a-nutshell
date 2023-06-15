@@ -12,7 +12,6 @@ tasks:
     deps:
       - buf-gen
     cmds:
-      - task: build-reverseproxy
       - task: build-server
 
   buf-gen:
@@ -31,8 +30,7 @@ tasks:
     desc: Builds server executable
     cmds:
       - cmd: go build -o cmd/server/ cmd/server/main.go
-
-  build-reverseproxy:
-    desc: Builds reverseproxy executable
+  
+  grpcurl-it:
     cmds:
-      - cmd: go build -o cmd/reverseproxy/ cmd/reverseproxy/main.go
+      - cmd: buf curl --schema ./proto/ --data '{"to":"Paul Watson"}' http://localhost:8081/greeter.v1.GreeterService/GetGreetings
